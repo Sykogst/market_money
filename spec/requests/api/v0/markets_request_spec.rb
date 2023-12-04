@@ -5,7 +5,9 @@ describe 'Markets API' do
     create_list(:market, 3)
 
     get '/api/v0/markets'
-
     expect(response).to be_successful
+
+    markets = JSON.parse(response.body, symbolize_names: true)
+    expect(markets.count).to eq(3)
   end
 end
