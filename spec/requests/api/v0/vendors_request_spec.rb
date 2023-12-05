@@ -39,4 +39,26 @@ describe 'Vendors API' do
     expect(data[:errors].first[:title]).to eq("Couldn't find Vendor with 'id'=1")
   end
 
+  it "creates a new vendor, GOOD data 201 status,  create - /api/v0/vendors" do
+    vendor_params = ({
+                    name: 'Murder Stuffs',
+                    description: 'Sppoky things',
+                    contact_name: 'Sam T',
+                    contact_phone: '1-800-522-1032',
+                    credit_accepted: true
+                  })
+    headers = {"CONTENT_TYPE" => "application/json"}
+  
+    post "/api/v0/vendors", headers: headers, params: JSON.generate(vendor: vendor_params)
+    created_book = Vendor.last
+  
+    expect(response).to be_successful
+    expect(response.status).to eq(201)
+
+    expect(created_book.name).to eq(vendor_params[:name])
+    expect(created_book.description).to eq(vendor_params[:description])
+    expect(created_book.contact_name).to eq(vendor_params[:contact_name])
+    expect(created_book.contact_phone).to eq(vendor_params[:contact_phone])
+    expect(created_book.credit_accepted).to eq(vendor_params[:credit_accepted])
+  end
 end

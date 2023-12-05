@@ -11,7 +11,7 @@ Rails.application.routes.draw do
           resources :vendors, only: [:index], controller: 'market_vendors'
         end
 
-        resources :vendors, only: [:show]
+        resources :vendors, only: [:show, :create]
       end
     end
   end
