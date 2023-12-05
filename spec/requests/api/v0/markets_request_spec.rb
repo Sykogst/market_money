@@ -15,7 +15,7 @@ describe 'Markets API' do
 
     markets_parsed[:data].each do |market|
       expect(market).to have_key(:id)
-      expect(market[:id]).to be_an(Integer)
+      expect(market[:id]).to be_an(String)
 
       expect(market).to have_key(:type)
       expect(market[:type]).to be_an(String)
