@@ -11,9 +11,10 @@ describe 'Markets API' do
     expect(response).to be_successful
 
     vendors_parsed = JSON.parse(response.body, symbolize_names: true)
-    expect(markets_parsed[:data].count).to eq(5)
+    vendor_data = vendors_parsed[:data]
+    expect(vendor_data.count).to eq(5)
 
-    vendors_parsed.each do |vendor|
+    vendor_data.each do |vendor|
       expect(vendor).to have_key(:id)
       expect(vendor[:id]).to be_an(String)
 
@@ -36,7 +37,7 @@ describe 'Markets API' do
       expect(attributes[:contact_phone]).to be_an(String)
 
       expect(attributes).to have_key(:credit_accepted)
-      expect(attributes[:credit_accepted]).to be_an(Boolean)
+      expect(attributes[:credit_accepted]).to be_a(TrueClass).or be_a(FalseClass)
     end
   end
 end
