@@ -57,6 +57,48 @@ describe 'Markets API' do
     get "/api/v0/markets/#{market.id}"
     expect(response).to be_successful
 
-    # market_parsed = JSON.parse(response.body, symbolize_names: true)
+    market_parsed = JSON.parse(response.body, symbolize_names: true)
+
+    attributes = market_parsed[:data][:attributes]
+
+    expect(attributes).to have_key(:name)
+    expect(attributes[:name]).to be_an(String)
+
+    expect(attributes).to have_key(:street)
+    expect(attributes[:street]).to be_an(String)
+
+    expect(attributes).to have_key(:city)
+    expect(attributes[:city]).to be_an(String)
+
+    expect(attributes).to have_key(:county)
+    expect(attributes[:county]).to be_an(String)
+
+    expect(attributes).to have_key(:state)
+    expect(attributes[:state]).to be_an(String)
+
+    expect(attributes).to have_key(:zip)
+    expect(attributes[:zip]).to be_an(String)
+
+    expect(attributes).to have_key(:lat)
+    expect(attributes[:lat]).to be_an(String)
+
+    expect(attributes).to have_key(:lon)
+    expect(attributes[:lon]).to be_an(String)
+
+    expect(attributes).to have_key(:vendor_count)
+    expect(attributes[:vendor_count]).to be_an(Integer)
   end
+
+  it 'gets a single market, by its BAD id, show - /api/v0/markets/:id, SAD path' do
+    get "/api/v0/markets/1"
+    expect(response).to_not be_successful
+    expect(response.status).to eq(404)
+
+    data = JSON.parse(response.body, symbolize_names: true)
+    
+    expect(data[:errors]).to be_a(Array)
+    expect(data[:errors].first[:status]).to eq("404")
+    expect(data[:errors].first[:title]).to eq("Couldn't find Market with 'id'=1")
+  end
+
 end
