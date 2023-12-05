@@ -19,15 +19,14 @@ RSpec.describe Market, type: :model do
   describe '#Instance Methods' do
     it '#get_vendor_count' do
       market = create(:market)
-      expect(market.send(:get_vendor_count)).to eq(0)
+      expect(market.get_vendor_count).to eq(0)
+
       vendor = create(:vendor)
-      market.vendors << vendor
-      # QUESTION: I tried and did not work... create_list(:vendor, 3, markets: market)
+      market.vendors << vendor # QUESTION: I tried and did not work... create_list(:vendor, 3, markets: market)
       expect(market.get_vendor_count).to eq(1)
 
       more_vendors = create_list(:vendor, 2)
       market.vendors << more_vendors
-
       expect(market.get_vendor_count).to eq(3)
     end
   end
