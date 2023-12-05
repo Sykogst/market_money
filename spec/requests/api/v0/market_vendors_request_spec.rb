@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-describe 'Markets API' do
+describe 'Market Vendors API' do
   it 'sends a list of all vendors for a market, get all vendors, index - /api/v0/markets/:id/vendors' do
     vendors = create_list(:vendor, 5)
     market = create(:market, vendors: vendors)
