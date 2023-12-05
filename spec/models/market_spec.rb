@@ -26,7 +26,8 @@ RSpec.describe Market, type: :model do
 
       more_vendors = create_list(:vendor, 2)
       market.vendors << more_vendors
-      market.save
+      # QUESTION: What exactly invokes before_save
+      market.save 
 
       expect(market.vendor_count).to eq(3)
     end

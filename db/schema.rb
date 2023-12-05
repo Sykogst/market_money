@@ -30,7 +30,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_12_05_005534) do
     t.string "zip"
     t.string "lat"
     t.string "lon"
-    t.integer "vendor_count"
+    t.bigint "vendor_count"
   end
 
   create_table "vendors", force: :cascade do |t|
