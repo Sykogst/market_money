@@ -1,3 +1,5 @@
+require 'faker'
+
 FactoryBot.define do
   factory :market_vendor do
     association :market
