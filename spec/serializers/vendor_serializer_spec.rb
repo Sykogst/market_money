@@ -1,41 +1,30 @@
 require 'rails_helper'
 
-RSpec.describe MarketSerializer, type: :request do
+RSpec.describe VendorSerializer, type: :request do
   describe 'Serializing' do
     it 'has keys and data with types' do
-      create_list(:market, 5)
-      get '/api/v0/markets'
+      vendors = create_list(:vendor, 5)
+      market = create(:market, vendors: vendors)
+      get "/api/v0/markets/#{market.id}/vendors"
       expect(response).to be_successful
 
       data = JSON.parse(response.body)
-      market = data["data"].first["attributes"]
+      vendor = data["data"].first["attributes"]
 
-      expect(market).to have_key("name")
-      expect(market["name"]).to be_an(String)
+      expect(vendor).to have_key("name")
+      expect(vendor["name"]).to be_an(String)
 
-      expect(market).to have_key("street")
-      expect(market["street"]).to be_an(String)
+      expect(vendor).to have_key("description")
+      expect(vendor["description"]).to be_an(String)
 
-      expect(market).to have_key("city")
-      expect(market["city"]).to be_an(String)
+      expect(vendor).to have_key("contact_name")
+      expect(vendor["contact_name"]).to be_an(String)
 
-      expect(market).to have_key("county")
-      expect(market["county"]).to be_an(String)
+      expect(vendor).to have_key("contact_phone")
+      expect(vendor["contact_phone"]).to be_an(String)
 
-      expect(market).to have_key("state")
-      expect(market["state"]).to be_an(String)
-
-      expect(market).to have_key("zip")
-      expect(market["zip"]).to be_an(String)
-
-      expect(market).to have_key("lat")
-      expect(market["lat"]).to be_an(String)
-
-      expect(market).to have_key("lon")
-      expect(market["lon"]).to be_an(String)
-
-      expect(market).to have_key("vendor_count")
-      expect(market["vendor_count"]).to be_an(Integer)
+      expect(vendor).to have_key("credit_accepted")
+      expect(vendor["credit_accepted"]).to be_a(TrueClass).or be_a(FalseClass)
     end
   end
 end
