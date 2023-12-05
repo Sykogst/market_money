@@ -1,21 +1,20 @@
 require 'rails_helper'
 
 describe 'Markets API' do
-  it 'sends a list of all markets' do
-      market_1 = create(:market, vendors: [create(:vendor)])
-      market_2 = create(:market, vendors: create_list(:vendor, 2))
-      market_3 = create(:market)
-      markets = [market_1, market_2, market_3]
-      # QUESTION For some reason, I had to force save in this test
-      # Would this mean it is not working otherwise after an API request?
-      markets.each { |market| market.save }
+  before(:each) do
+    market_1 = create(:market, vendors: [create(:vendor)])
+    market_2 = create(:market, vendors: create_list(:vendor, 2))
+    market_3 = create(:market)
+    @markets = [market_1, market_2, market_3]
+  end
 
+  it 'sends a list of all markets, get all markets, index' do
     get '/api/v0/markets'
     expect(response).to be_successful
-    markets = JSON.parse(response.body, symbolize_names: true)
-    expect(markets[:data].count).to eq(3)
+    @markets = JSON.parse(response.body, symbolize_names: true)
+    expect(@markets[:data].count).to eq(3)
 
-    markets[:data].each do |market|
+    @markets[:data].each do |market|
       expect(market).to have_key(:id)
       expect(market[:id]).to be_an(Integer)
 
