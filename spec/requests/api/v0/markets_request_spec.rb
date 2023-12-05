@@ -1,20 +1,19 @@
 require 'rails_helper'
 
 describe 'Markets API' do
-  before(:each) do
+  it 'sends a list of all markets, get all markets, index - /api/v0/markets' do
     market_1 = create(:market, vendors: [create(:vendor)])
     market_2 = create(:market, vendors: create_list(:vendor, 2))
     market_3 = create(:market)
-    @markets = [market_1, market_2, market_3]
-  end
+    # markets_list = [market_1, market_2, market_3]
 
-  it 'sends a list of all markets, get all markets, index' do
     get '/api/v0/markets'
     expect(response).to be_successful
-    @markets = JSON.parse(response.body, symbolize_names: true)
-    expect(@markets[:data].count).to eq(3)
+    
+    markets_parsed = JSON.parse(response.body, symbolize_names: true)
+    expect(markets_parsed[:data].count).to eq(3)
 
-    @markets[:data].each do |market|
+    markets_parsed[:data].each do |market|
       expect(market).to have_key(:id)
       expect(market[:id]).to be_an(Integer)
 
@@ -51,5 +50,13 @@ describe 'Markets API' do
       expect(attributes).to have_key(:vendor_count)
       expect(attributes[:vendor_count]).to be_an(Integer)
     end
+  end
+
+  it 'gets a single market, by its id, show - /api/v0/markets/:id' do
+    market = create(:market)
+    get "/api/v0/markets/#{market.id}"
+    expect(response).to be_successful
+
+    # market_parsed = JSON.parse(response.body, symbolize_names: true)
   end
 end
