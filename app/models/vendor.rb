@@ -3,5 +3,13 @@ class Vendor < ApplicationRecord
   has_many :markets, through: :market_vendors
 
   validates :name, :description, :contact_name, :contact_phone, presence: true
-  # validates :credit_accepted, inclusion: { in: [true, false] }
+  validate :credit_accepted_presence
+
+  private
+
+  def credit_accepted_presence
+    if credit_accepted.nil?
+      errors.add(:credit_accepted, "can't be blank")
+    end
+  end
 end
