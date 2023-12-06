@@ -4,9 +4,17 @@ describe 'Market Vendors API', type: :request do
   describe 'Get All Vendors for a Market' do
     it 'sends a list of all vendors for a market, get all vendors, index - /api/v0/markets/:id/vendors' do
       vendors = create_list(:vendor, 5)
-      market = create(:market, vendors: vendors)
+      market = create(:market)
+      vendors.each do |vendor|
+        create(:market_vendor, market: market, vendor: vendor)
+      end
+      # market = create(:market, vendors: vendors)
       vendors_2 = create_list(:vendor, 5)
-      market_2 = create(:market, vendors: vendors_2)
+      market_2 = create(:market)
+      # market_2 = create(:market, vendors: vendors_2)
+      vendors_2.each do |vendor|
+        create(:market_vendor, market: market_2, vendor: vendor)
+      end
 
       get "/api/v0/markets/#{market.id}/vendors"
       expect(response).to be_successful
@@ -56,10 +64,9 @@ describe 'Market Vendors API', type: :request do
   end
 
   describe 'Create a MarketVendor' do
-    it 'creates new association between a market and a vendor, create /api/v0/market_vendors' do
+    it 'creates new market and a vendor association, GOOD data, 201 status, create /api/v0/market_vendors' do
       market = create(:market)
       vendor = create(:vendor)
-
       market_vendor_params = ({
         market_id: market.id,
         vendor_id: vendor.id
@@ -73,7 +80,18 @@ describe 'Market Vendors API', type: :request do
       expect(response.status).to eq(201)
       expect(created_market_vendor.market_id).to eq(market_vendor_params[:market_id])
       expect(created_market_vendor.vendor_id).to eq(market_vendor_params[:vendor_id])
+    end
 
+    it 'after market_vendor creation, vendor is included when requesting get "/api/v0/markets/:id/vendors"' do
+      market = create(:market)
+      vendor = create(:vendor)
+      market_vendor_params = ({
+        market_id: market.id,
+        vendor_id: vendor.id
+      })
+      headers = {"CONTENT_TYPE" => "application/json"}
+
+      post "/api/v0/market_vendors", headers: headers, params: JSON.generate(market_vendor: market_vendor_params)
       get "/api/v0/markets/#{market.id}/vendors"
       vendors_parsed = JSON.parse(response.body, symbolize_names: true)
       recent_vendor_data = vendors_parsed[:data].last
@@ -82,13 +100,13 @@ describe 'Market Vendors API', type: :request do
 
       # Another vendor added to same market
       vendor_2 = create(:vendor)
-      market_vendor_params = ({
+      market_vendor_2_params = ({
         market_id: market.id,
         vendor_id: vendor_2.id
       })
       headers = {"CONTENT_TYPE" => "application/json"}
 
-      post "/api/v0/market_vendors", headers: headers, params: JSON.generate(market_vendor: market_vendor_params)
+      post "/api/v0/market_vendors", headers: headers, params: JSON.generate(market_vendor: market_vendor_2_params)
       get "/api/v0/markets/#{market.id}/vendors"
       more_vendors_parsed = JSON.parse(response.body, symbolize_names: true)
       more_recent_vendor_data = more_vendors_parsed[:data].last
@@ -96,6 +114,80 @@ describe 'Market Vendors API', type: :request do
       expect(more_recent_vendor_data[:relationships][:markets][:data].last[:id].to_i).to eq(market.id)
     end
 
+    it 'creates new market and a vendor association, BAD market_id data, 404 status, create /api/v0/market_vendors' do
+      vendor = create(:vendor)
+      market_vendor_params = ({
+        market_id: 1,
+        vendor_id: vendor.id
+      })
+      headers = {"CONTENT_TYPE" => "application/json"}
 
+      post "/api/v0/market_vendors", headers: headers, params: JSON.generate(market_vendor: market_vendor_params)
+      expect(response).to_not be_successful
+      expect(response.status).to eq(404)
+
+      data = JSON.parse(response.body, symbolize_names: true)
+      
+      expect(data[:errors]).to be_a(Array)
+      expect(data[:errors].first[:status]).to eq("404")
+      expect(data[:errors].first[:title]).to eq("Couldn't find Market with 'id'=1")
+    end
+
+    it 'creates new market and a vendor association, BAD vendor_id data, 404 status, create /api/v0/market_vendors' do
+      market = create(:market)
+      market_vendor_params = ({
+        market_id: market.id,
+        vendor_id: 1
+      })
+      headers = {"CONTENT_TYPE" => "application/json"}
+
+      post "/api/v0/market_vendors", headers: headers, params: JSON.generate(market_vendor: market_vendor_params)
+      expect(response).to_not be_successful
+      expect(response.status).to eq(404)
+
+      data = JSON.parse(response.body, symbolize_names: true)
+      
+      expect(data[:errors]).to be_a(Array)
+      expect(data[:errors].first[:status]).to eq("404")
+      expect(data[:errors].first[:title]).to eq("Couldn't find Vendor with 'id'=1")
+    end
+
+    it 'creates new market and a vendor association, BAD nil market_id data, 400 status, create /api/v0/market_vendors' do
+      vendor = create(:vendor)
+      market_vendor_params = ({
+        market_id: nil,
+        vendor_id: vendor.id
+      })
+      headers = {"CONTENT_TYPE" => "application/json"}
+
+      post "/api/v0/market_vendors", headers: headers, params: JSON.generate(market_vendor: market_vendor_params)
+      expect(response).to_not be_successful
+      expect(response.status).to eq(400)
+
+      data = JSON.parse(response.body, symbolize_names: true)
+      
+      expect(data[:errors]).to be_a(Array)
+      expect(data[:errors].first[:status]).to eq("400")
+      expect(data[:errors].first[:title]).to eq("Validation failed: Market must exist, Market can't be blank")
+    end
+
+    it 'creates new market and a vendor association, BAD nil vendor_id data, 400 status, create /api/v0/market_vendors' do
+      market = create(:market)
+      market_vendor_params = ({
+        market_id: market.id,
+        vendor_id: nil
+      })
+      headers = {"CONTENT_TYPE" => "application/json"}
+
+      post "/api/v0/market_vendors", headers: headers, params: JSON.generate(market_vendor: market_vendor_params)
+      expect(response).to_not be_successful
+      expect(response.status).to eq(400)
+
+      data = JSON.parse(response.body, symbolize_names: true)
+      
+      expect(data[:errors]).to be_a(Array)
+      expect(data[:errors].first[:status]).to eq("400")
+      expect(data[:errors].first[:title]).to eq("Validation failed: Vendor must exist, Vendor can't be blank")
+    end
   end
 end

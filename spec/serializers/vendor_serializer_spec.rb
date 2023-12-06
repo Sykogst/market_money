@@ -3,8 +3,12 @@ require 'rails_helper'
 RSpec.describe VendorSerializer, type: :request do
   describe 'Serializing' do
     it 'has keys and data with types' do
-      vendors = create_list(:vendor, 5)
-      market = create(:market, vendors: vendors)
+      
+      market = create(:market)
+      create_list(:vendor, 5).each do |vendor|
+        create(:market_vendor, market: market, vendor: vendor)
+      end
+
       get "/api/v0/markets/#{market.id}/vendors"
       expect(response).to be_successful
 
