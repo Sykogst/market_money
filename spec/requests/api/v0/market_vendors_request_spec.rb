@@ -90,11 +90,12 @@ describe 'Market Vendors API', type: :request do
 
       post "/api/v0/market_vendors", headers: headers, params: JSON.generate(market_vendor: market_vendor_params)
       get "/api/v0/markets/#{market.id}/vendors"
-      recent_vendor_data = vendors_parsed[:data].last
+      more_vendors_parsed = JSON.parse(response.body, symbolize_names: true)
+      more_recent_vendor_data = more_vendors_parsed[:data].last
 
-      expect(recent_vendor_data[:relationships][:markets][:data].last[:id].to_i).to eq(market.id)
+      expect(more_recent_vendor_data[:relationships][:markets][:data].last[:id].to_i).to eq(market.id)
     end
 
-    
+
   end
 end
