@@ -42,7 +42,7 @@ describe 'Vendors API', type: :request do
   end
 
   describe 'Create A Vendor' do
-    it "creates a new vendor, GOOD data 201 status,  create - /api/v0/vendors" do
+    it "creates a new vendor, GOOD data 201 status, create - /api/v0/vendors" do
       vendor_params = ({
                       name: 'Murder Stuffs',
                       description: 'Sppoky things',
@@ -65,7 +65,7 @@ describe 'Vendors API', type: :request do
       expect(created_vendor.credit_accepted).to eq(vendor_params[:credit_accepted])
     end
 
-    it "creates a new vendor, MISSING name 400 status,  create - /api/v0/vendors, SAD PATH" do
+    it "creates a new vendor, MISSING name 400 status, create - /api/v0/vendors, SAD PATH" do
       vendor_params = ({
                       description: 'Sppoky things',
                       contact_name: 'Sam T',
@@ -83,7 +83,7 @@ describe 'Vendors API', type: :request do
       expect(data[:errors].first[:title]).to eq("Validation failed: Name can't be blank")
     end
 
-    it "creates a new vendor, MISSING description 400 status,  create - /api/v0/vendors, SAD PATH" do
+    it "creates a new vendor, MISSING description 400 status, create - /api/v0/vendors, SAD PATH" do
       vendor_params = ({
                       name: 'Murder Stuff',
                       contact_name: 'Sam T',
@@ -101,7 +101,7 @@ describe 'Vendors API', type: :request do
       expect(data[:errors].first[:title]).to eq("Validation failed: Description can't be blank")
     end
 
-    it "creates a new vendor, MISSING contact_name 400 status,  create - /api/v0/vendors, SAD PATH" do
+    it "creates a new vendor, MISSING contact_name 400 status, create - /api/v0/vendors, SAD PATH" do
       vendor_params = ({
                       name: 'Murder Stuff',
                       description: 'Spooky Things',
@@ -119,7 +119,7 @@ describe 'Vendors API', type: :request do
       expect(data[:errors].first[:title]).to eq("Validation failed: Contact name can't be blank")
     end
 
-    it "creates a new vendor, MISSING contact_phone 400 status,  create - /api/v0/vendors, SAD PATH" do
+    it "creates a new vendor, MISSING contact_phone 400 status, create - /api/v0/vendors, SAD PATH" do
       vendor_params = ({
                       name: 'Murder Stuff',
                       description: 'Spooky Things',
@@ -137,7 +137,7 @@ describe 'Vendors API', type: :request do
       expect(data[:errors].first[:title]).to eq("Validation failed: Contact phone can't be blank")
     end
 
-    it "creates a new vendor, MISSING credit_accepted 400 status,  create - /api/v0/vendors, SAD PATH" do
+    it "creates a new vendor, MISSING credit_accepted 400 status, create - /api/v0/vendors, SAD PATH" do
       vendor_params = ({
                       name: 'Murder Stuff',
                       description: 'Spooky Things',
@@ -157,27 +157,162 @@ describe 'Vendors API', type: :request do
   end
 
   describe 'Update a Vendor' do
-    it "creates a new vendor, GOOD data 201 status,  create - /api/v0/vendors" do
+    it "updates a current vendor, GOOD all data 201 status, update - /api/v0/vendors/:id" do
       vendor_params = ({
-                      name: 'Murder Stuffs',
-                      description: 'Sppoky things',
-                      contact_name: 'Sam T',
-                      contact_phone: '1-800-522-1032',
-                      credit_accepted: true
+                      name: 'Happy Stuffs',
+                      description: 'Cute things',
+                      contact_name: 'Sam Tran',
+                      contact_phone: '1-888-522-1032',
+                      credit_accepted: false
                     })
       headers = {"CONTENT_TYPE" => "application/json"}
-    
-      post "/api/v0/vendors", headers: headers, params: JSON.generate(vendor: vendor_params)
-      created_vendor = Vendor.last
+      vendor = create(:vendor)
+
+      expect(vendor.name).to_not eq(vendor_params[:name])
+      expect(vendor.description).to_not eq(vendor_params[:description])
+      expect(vendor.contact_name).to_not eq(vendor_params[:contact_name])
+      expect(vendor.contact_phone).to_not eq(vendor_params[:contact_phone])
+      expect(vendor.credit_accepted).to_not eq(vendor_params[:credit_accepted])
+
+      patch "/api/v0/vendors/#{vendor.id}", headers: headers, params: JSON.generate(vendor: vendor_params)
 
       expect(response).to be_successful
       expect(response.status).to eq(201)
 
-      expect(created_vendor.name).to eq(vendor_params[:name])
-      expect(created_vendor.description).to eq(vendor_params[:description])
-      expect(created_vendor.contact_name).to eq(vendor_params[:contact_name])
-      expect(created_vendor.contact_phone).to eq(vendor_params[:contact_phone])
-      expect(created_vendor.credit_accepted).to eq(vendor_params[:credit_accepted])
+      expect(vendor.name).to eq(vendor_params[:name])
+      expect(vendor.description).to eq(vendor_params[:description])
+      expect(vendor.contact_name).to eq(vendor_params[:contact_name])
+      expect(vendor.contact_phone).to eq(vendor_params[:contact_phone])
+      expect(vendor.credit_accepted).to eq(vendor_params[:credit_accepted])
+    end
+
+    it "updates a current vendor, GOOD some data 201 status, update - /api/v0/vendors/:id" do
+      vendor_params = ({
+                      name: 'Happy Stuffs',
+                      contact_phone: '1-888-522-1032'
+                    })
+      headers = {"CONTENT_TYPE" => "application/json"}
+      vendor = create(:vendor)
+
+      expect(vendor.name).to_not eq(vendor_params[:name])
+      expect(vendor.contact_phone).to_not eq(vendor_params[:contact_phone])
+
+      patch "/api/v0/vendors/#{vendor.id}", headers: headers, params: JSON.generate(vendor: vendor_params)
+
+      expect(response).to be_successful
+      expect(response.status).to eq(201)
+
+      expect(vendor.name).to eq(vendor_params[:name])
+      expect(vendor.contact_phone).to eq(vendor_params[:contact_phone])
+    end
+
+    it "updates a current vendor, BAD vendor ID, 404 status, update - /api/v0/vendors/:id" do
+      vendor_params = ({
+                      name: 'Happy Stuffs',
+                      contact_phone: '1-888-522-1032'
+                    })
+      headers = {"CONTENT_TYPE" => "application/json"}
+
+      patch "/api/v0/vendors/1", headers: headers, params: JSON.generate(vendor: vendor_params)
+
+      expect(response).to_not be_successful
+      expect(response.status).to eq(404)
+
+      data = JSON.parse(response.body, symbolize_names: true)
+      
+      expect(data[:errors]).to be_a(Array)
+      expect(data[:errors].first[:status]).to eq("404")
+      expect(data[:errors].first[:title]).to eq("Couldn't find Vendor with 'id'=1")
+    end
+
+    it "updates a current vendor, BAD nil name data 400 status, update - /api/v0/vendors/:id" do
+      vendor_params = ({
+                      name: nil,
+                    })
+      headers = {"CONTENT_TYPE" => "application/json"}
+      vendor = create(:vendor)
+
+      patch "/api/v0/vendors/#{vendor.id}", headers: headers, params: JSON.generate(vendor: vendor_params)
+
+      expect(response).to be_successful
+      expect(response.status).to eq(400)
+      data = JSON.parse(response.body, symbolize_names: true)
+
+      expect(data[:errors]).to be_a(Array)
+      expect(data[:errors].first[:status]).to eq("400")
+      expect(data[:errors].first[:title]).to eq("Validation failed: Name can't be blank")
+    end
+
+    it "updates a current vendor, BAD nil description data 400 status, update - /api/v0/vendors/:id" do
+      vendor_params = ({
+                      description: nil
+                    })
+      headers = {"CONTENT_TYPE" => "application/json"}
+      vendor = create(:vendor)
+
+      patch "/api/v0/vendors/#{vendor.id}", headers: headers, params: JSON.generate(vendor: vendor_params)
+
+      expect(response).to be_successful
+      expect(response.status).to eq(400)
+      data = JSON.parse(response.body, symbolize_names: true)
+
+      expect(data[:errors]).to be_a(Array)
+      expect(data[:errors].first[:status]).to eq("400")
+      expect(data[:errors].first[:title]).to eq("Validation failed: Description can't be blank")
+    end
+
+    it "updates a current vendor, BAD nil contact_phone data 400 status, update - /api/v0/vendors/:id" do
+      vendor_params = ({
+                      contact_phone: nil
+                    })
+      headers = {"CONTENT_TYPE" => "application/json"}
+      vendor = create(:vendor)
+
+      patch "/api/v0/vendors/#{vendor.id}", headers: headers, params: JSON.generate(vendor: vendor_params)
+
+      expect(response).to be_successful
+      expect(response.status).to eq(400)
+      data = JSON.parse(response.body, symbolize_names: true)
+
+      expect(data[:errors]).to be_a(Array)
+      expect(data[:errors].first[:status]).to eq("400")
+      expect(data[:errors].first[:title]).to eq("Validation failed: Contact phone can't be blank")
+    end
+
+    it "updates a current vendor, BAD nil contact_name data 400 status, update - /api/v0/vendors/:id" do
+      vendor_params = ({
+                      contact_name: nil
+                    })
+      headers = {"CONTENT_TYPE" => "application/json"}
+      vendor = create(:vendor)
+
+      patch "/api/v0/vendors/#{vendor.id}", headers: headers, params: JSON.generate(vendor: vendor_params)
+
+      expect(response).to be_successful
+      expect(response.status).to eq(400)
+      data = JSON.parse(response.body, symbolize_names: true)
+
+      expect(data[:errors]).to be_a(Array)
+      expect(data[:errors].first[:status]).to eq("400")
+      expect(data[:errors].first[:title]).to eq("Validation failed: Contact name can't be blank")
+    end
+
+    it "updates a current vendor, BAD nil credit_accepted data 400 status, update - /api/v0/vendors/:id" do
+      vendor_params = ({
+                      credit_accepted: ''
+                    })
+      headers = {"CONTENT_TYPE" => "application/json"}
+      vendor = create(:vendor)
+
+      patch "/api/v0/vendors/#{vendor.id}", headers: headers, params: JSON.generate(vendor: vendor_params)
+
+      expect(response).to be_successful
+      expect(response.status).to eq(400)
+      data = JSON.parse(response.body, symbolize_names: true)
+
+      expect(data[:errors]).to be_a(Array)
+      expect(data[:errors].first[:status]).to eq("400")
+      expect(data[:errors].first[:title]).to eq("Validation failed: Credit accepted can't be blank")
     end
   end
 
@@ -208,5 +343,4 @@ describe 'Vendors API', type: :request do
       expect(data[:errors].first[:title]).to eq("Couldn't find Vendor with 'id'=1")
     end
   end
-
 end
