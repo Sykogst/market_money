@@ -168,7 +168,7 @@ describe 'Vendors API' do
     market = create(:market)
     market_vendor = create(:market_vendor, market: market, vendor: vendor)
   
-    expect{ delete "/api/v0/vendors/#{vendor.id}" }.to change(Vendor, :count).by(-1)
+    expect{ delete "/api/v0/vendors/1" }.to change(Vendor, :count).by(0)
     expect(response.status).to eq(404)
 
     data = JSON.parse(response.body, symbolize_names: true)
