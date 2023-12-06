@@ -114,6 +114,7 @@ describe 'Market Vendors API', type: :request do
       expect(more_recent_vendor_data[:relationships][:markets][:data].last[:id].to_i).to eq(market.id)
     end
 
+    # QUESTION Having trouble, they all either pass in as 400 or 404
     it 'creates new market and a vendor association, BAD market_id data, 404 status, create /api/v0/market_vendors' do
       vendor = create(:vendor)
       market_vendor_params = ({

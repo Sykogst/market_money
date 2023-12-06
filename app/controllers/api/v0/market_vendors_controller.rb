@@ -9,13 +9,13 @@ class Api::V0::MarketVendorsController < ApplicationController
   end
 
   def create
-    v = Vendor.find(params[:market_vendor][:vendor_id])
-    m = Market.find(params[:market_vendor][:market_id])
-    # require 'pry'; binding.pry
+    # v = Vendor.find(params[:market_vendor][:vendor_id])
+    # m = Market.find(params[:market_vendor][:market_id])
     market_vendor = MarketVendor.create!(market_vendor_params)
-    head 201
+    # head 201
     # render json: market_vendor, status: :created
-    # render json: MarketVendorSerializer.new(market_vendor), status: 201
+
+    render json: MarketVendorSerializer.new(market_vendor), status: 201
   end
 
   private
