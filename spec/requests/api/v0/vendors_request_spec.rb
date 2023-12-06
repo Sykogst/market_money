@@ -157,7 +157,7 @@ describe 'Vendors API', type: :request do
   end
 
   describe 'Update a Vendor' do
-    it "updates a current vendor, GOOD all data 201 status, update - /api/v0/vendors/:id" do
+    it "updates a current vendor, GOOD all data 200 status, update - /api/v0/vendors/:id" do
       vendor_params = ({
                       name: 'Happy Stuffs',
                       description: 'Cute things',
@@ -177,7 +177,7 @@ describe 'Vendors API', type: :request do
       patch "/api/v0/vendors/#{vendor.id}", headers: headers, params: JSON.generate(vendor: vendor_params)
 
       expect(response).to be_successful
-      expect(response.status).to eq(201)
+      expect(response.status).to eq(200)
 
       expect(vendor.name).to eq(vendor_params[:name])
       expect(vendor.description).to eq(vendor_params[:description])
@@ -186,7 +186,7 @@ describe 'Vendors API', type: :request do
       expect(vendor.credit_accepted).to eq(vendor_params[:credit_accepted])
     end
 
-    it "updates a current vendor, GOOD some data 201 status, update - /api/v0/vendors/:id" do
+    it "updates a current vendor, GOOD some data 200 status, update - /api/v0/vendors/:id" do
       vendor_params = ({
                       name: 'Happy Stuffs',
                       contact_phone: '1-888-522-1032'
@@ -200,7 +200,7 @@ describe 'Vendors API', type: :request do
       patch "/api/v0/vendors/#{vendor.id}", headers: headers, params: JSON.generate(vendor: vendor_params)
 
       expect(response).to be_successful
-      expect(response.status).to eq(201)
+      expect(response.status).to eq(200)
 
       expect(vendor.name).to eq(vendor_params[:name])
       expect(vendor.contact_phone).to eq(vendor_params[:contact_phone])
