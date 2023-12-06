@@ -54,4 +54,47 @@ describe 'Market Vendors API', type: :request do
       expect(data[:errors].first[:title]).to eq("Couldn't find Market with 'id'=1")
     end
   end
+
+  describe 'Create a MarketVendor' do
+    it 'creates new association between a market and a vendor, create /api/v0/market_vendors' do
+      market = create(:market)
+      vendor = create(:vendor)
+
+      market_vendor_params = ({
+        market_id: market.id,
+        vendor_id: vendor.id
+      })
+      headers = {"CONTENT_TYPE" => "application/json"}
+
+      post "/api/v0/market_vendors", headers: headers, params: JSON.generate(market_vendor: market_vendor_params)
+      created_market_vendor = MarketVendor.last
+
+      expect(response).to be_successful
+      expect(response.status).to eq(201)
+      expect(created_market_vendor.market_id).to eq(market_vendor_params[:market_id])
+      expect(created_market_vendor.vendor_id).to eq(market_vendor_params[:vendor_id])
+
+      get "/api/v0/markets/#{market.id}/vendors"
+      vendors_parsed = JSON.parse(response.body, symbolize_names: true)
+      recent_vendor_data = vendors_parsed[:data].last
+
+      expect(recent_vendor_data[:relationships][:markets][:data].last[:id].to_i).to eq(market.id)
+
+      # Another vendor added to same market
+      vendor_2 = create(:vendor)
+      market_vendor_params = ({
+        market_id: market.id,
+        vendor_id: vendor_2.id
+      })
+      headers = {"CONTENT_TYPE" => "application/json"}
+
+      post "/api/v0/market_vendors", headers: headers, params: JSON.generate(market_vendor: market_vendor_params)
+      get "/api/v0/markets/#{market.id}/vendors"
+      recent_vendor_data = vendors_parsed[:data].last
+
+      expect(recent_vendor_data[:relationships][:markets][:data].last[:id].to_i).to eq(market.id)
+    end
+
+    
+  end
 end

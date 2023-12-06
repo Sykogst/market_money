@@ -39,9 +39,4 @@ class Api::V0::VendorsController < ApplicationController
   def vendor_params
     params.require(:vendor).permit(:name, :description, :contact_name, :contact_phone, :credit_accepted)
   end
-
-  # Here to jsut test if require matters or not
-  def vendor_params_update
-    params.require(:vendor).permit(:name, :description, :contact_name, :contact_phone, :credit_accepted)
-  end
 end
