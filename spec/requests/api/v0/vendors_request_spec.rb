@@ -166,7 +166,8 @@ describe 'Vendors API', type: :request do
                       credit_accepted: false
                     })
       headers = {"CONTENT_TYPE" => "application/json"}
-      vendor = create(:vendor)
+      vendor = create(:vendor, credit_accepted: true)
+      vendor_id = vendor.id
 
       expect(vendor.name).to_not eq(vendor_params[:name])
       expect(vendor.description).to_not eq(vendor_params[:description])
@@ -178,6 +179,8 @@ describe 'Vendors API', type: :request do
 
       expect(response).to be_successful
       expect(response.status).to eq(200)
+
+      vendor = Vendor.find(vendor_id) # Persistence issue, need to reassign variable after update
 
       expect(vendor.name).to eq(vendor_params[:name])
       expect(vendor.description).to eq(vendor_params[:description])
@@ -193,6 +196,7 @@ describe 'Vendors API', type: :request do
                     })
       headers = {"CONTENT_TYPE" => "application/json"}
       vendor = create(:vendor)
+      vendor_id = vendor.id
 
       expect(vendor.name).to_not eq(vendor_params[:name])
       expect(vendor.contact_phone).to_not eq(vendor_params[:contact_phone])
@@ -201,6 +205,8 @@ describe 'Vendors API', type: :request do
 
       expect(response).to be_successful
       expect(response.status).to eq(200)
+
+      vendor = Vendor.find(vendor_id) # Persistence issue, need to reassign variable after update
 
       expect(vendor.name).to eq(vendor_params[:name])
       expect(vendor.contact_phone).to eq(vendor_params[:contact_phone])
@@ -234,7 +240,7 @@ describe 'Vendors API', type: :request do
 
       patch "/api/v0/vendors/#{vendor.id}", headers: headers, params: JSON.generate(vendor: vendor_params)
 
-      expect(response).to be_successful
+      expect(response).to_not be_successful
       expect(response.status).to eq(400)
       data = JSON.parse(response.body, symbolize_names: true)
 
@@ -252,7 +258,7 @@ describe 'Vendors API', type: :request do
 
       patch "/api/v0/vendors/#{vendor.id}", headers: headers, params: JSON.generate(vendor: vendor_params)
 
-      expect(response).to be_successful
+      expect(response).to_not be_successful
       expect(response.status).to eq(400)
       data = JSON.parse(response.body, symbolize_names: true)
 
@@ -270,7 +276,7 @@ describe 'Vendors API', type: :request do
 
       patch "/api/v0/vendors/#{vendor.id}", headers: headers, params: JSON.generate(vendor: vendor_params)
 
-      expect(response).to be_successful
+      expect(response).to_not be_successful
       expect(response.status).to eq(400)
       data = JSON.parse(response.body, symbolize_names: true)
 
@@ -288,7 +294,7 @@ describe 'Vendors API', type: :request do
 
       patch "/api/v0/vendors/#{vendor.id}", headers: headers, params: JSON.generate(vendor: vendor_params)
 
-      expect(response).to be_successful
+      expect(response).to_not be_successful
       expect(response.status).to eq(400)
       data = JSON.parse(response.body, symbolize_names: true)
 
@@ -306,7 +312,7 @@ describe 'Vendors API', type: :request do
 
       patch "/api/v0/vendors/#{vendor.id}", headers: headers, params: JSON.generate(vendor: vendor_params)
 
-      expect(response).to be_successful
+      expect(response).to_not be_successful
       expect(response.status).to eq(400)
       data = JSON.parse(response.body, symbolize_names: true)
 
