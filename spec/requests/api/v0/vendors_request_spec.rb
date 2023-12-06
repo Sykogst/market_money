@@ -152,4 +152,30 @@ describe 'Vendors API' do
     expect(data[:errors].first[:title]).to eq("Validation failed: Credit accepted can't be blank")
   end
 
+  it "can destroy an vendor, by id, successful 204 status, delete - /api/v0/vendors/:id" do
+    vendor = create(:vendor)
+    market = create(:market)
+    market_vendor = create(:market_vendor, market: market, vendor: vendor)
+  
+    expect{ delete "/api/v0/vendors/#{vendor.id}" }.to change(Vendor, :count).by(-1)
+    expect(response.status).to eq(204)
+    expect{Vendor.find(vendor.id)}.to raise_error(ActiveRecord::RecordNotFound)
+    expect{MarketVendor.find(market_vendor.id)}.to raise_error(ActiveRecord::RecordNotFound)
+  end
+
+  it "can destroy an vendor, by BAD id, 404 status, delete - /api/v0/vendors/:id, SAD path" do
+    vendor = create(:vendor)
+    market = create(:market)
+    market_vendor = create(:market_vendor, market: market, vendor: vendor)
+  
+    expect{ delete "/api/v0/vendors/1" }.to change(Vendor, :count).by(0)
+    expect(response.status).to eq(404)
+
+    data = JSON.parse(response.body, symbolize_names: true)
+    
+    expect(data[:errors]).to be_a(Array)
+    expect(data[:errors].first[:status]).to eq("404")
+    expect(data[:errors].first[:title]).to eq("Couldn't find Vendor with 'id'=1")
+  end
+
 end

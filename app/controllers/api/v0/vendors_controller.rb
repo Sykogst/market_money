@@ -8,15 +8,15 @@ class Api::V0::VendorsController < ApplicationController
   end
 
   def create
-    # render json: Vendor.create!(vendor_params), status: 201
     vendor = Vendor.create!(vendor_params)
     render json: VendorSerializer.new(vendor), status: 201
   end
 
-  # def destroy
-  #   vendor = Vendor.find(params[:vendor_id])
-  #   vendor.destroy
-  # end
+  def destroy
+    vendor = Vendor.find(params[:id])
+    vendor.destroy
+    head :no_content
+  end
 
   private
  
