@@ -3,8 +3,12 @@ require 'rails_helper'
 describe 'Markets API', type: :request do
   describe 'Get All Markets' do
     it 'sends a list of all markets, get all markets, index - /api/v0/markets' do
-      market_1 = create(:market, vendors: [create(:vendor)])
-      market_2 = create(:market, vendors: create_list(:vendor, 2))
+      market_1 = create(:market)
+      create(:market_vendor, market: market_1, vendor: create(:vendor))
+      market_2 = create(:market)
+      create_list(:vendor, 3).each do |vendor|
+        create(:market_vendor, market: market_2, vendor: vendor)
+      end
       market_3 = create(:market)
       # markets_list = [market_1, market_2, market_3]
 
