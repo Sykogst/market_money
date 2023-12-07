@@ -26,6 +26,18 @@ class Api::V0::MarketVendorsController < ApplicationController
     end
   end
 
+  def destroy
+    market_vendor = MarketVendor.find_by(market_vendor_params)
+    market_id = market_vendor_params[:market_id]
+    vendor_id = market_vendor_params[:vendor_id]
+    
+    if market_vendor.nil?
+      delete_error_response(market_id, vendor_id)
+    else
+      render json: MarketVendor.delete(market_vendor), status: 204
+    end
+  end
+
   private
 
   def market_vendor_params
@@ -45,5 +57,10 @@ class Api::V0::MarketVendorsController < ApplicationController
   def duplicate_id_error_response(market_id, vendor_id)
     render json: ErrorSerializer.new(ErrorMessage.new("Validation failed: Market vendor asociation between market with market_id=#{market_id} and vendor_id=#{vendor_id} already exists", 422))
     .serialize_json, status: :unprocessable_entity
+  end
+
+  def delete_error_response(market_id, vendor_id)
+    render json: ErrorSerializer.new(ErrorMessage.new("Validation failed: Market vendor asociation between market with market_id=#{market_id} and vendor_id=#{vendor_id} already exists", 404))
+    .serialize_json, status: 404
   end
 end
