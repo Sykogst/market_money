@@ -216,7 +216,7 @@ describe 'Market Vendors API', type: :request do
   end
 
   describe 'Delete a MarketVendor' do
-    xit 'creates new market and a vendor association, GOOD data, 201 status, DELETE /api/v0/market_vendors' do
+    it 'deletes, GOOD data, 201 status, DELETE /api/v0/market_vendors' do
       market = create(:market)
       vendor = create(:vendor)
       create(:market_vendor, market: market, vendor: vendor)
@@ -233,6 +233,27 @@ describe 'Market Vendors API', type: :request do
       expect(response).to be_successful
       expect(response.status).to eq(204)
       expect(MarketVendor.count).to eq(0)
+    end
+
+    it 'deletes, GOOD data, 201 status, DELETE /api/v0/market_vendors' do
+      market = create(:market)
+      vendor = create(:vendor)
+      market_vendor_params = ({
+                      market_id: market.id,
+                      vendor_id: vendor.id
+                    })
+      headers = {'CONTENT_TYPE' => 'application/json'}
+
+      delete '/api/v0/market_vendors', headers: headers, params: JSON.generate(market_vendor: market_vendor_params)
+
+      expect(response).to_not be_successful
+      expect(response.status).to eq(404)
+
+      data = JSON.parse(response.body, symbolize_names: true)
+
+      expect(data[:errors]).to be_a(Array)
+      expect(data[:errors].first[:status]).to eq('404')
+      expect(data[:errors].first[:title]).to eq("Validation failed: Market vendor asociation between market with market_id=#{market.id} and vendor_id=#{vendor.id} already exists")
     end
   end
 end
