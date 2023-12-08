@@ -24,6 +24,18 @@ class Api::V0::MarketVendorsController < ApplicationController
         not_found_response(exception)
       end
     end
+
+      # THIS DID NOT WORK :(
+      # begin
+      #   market_vendor = MarketVendor.create!(market_id: market_vendor_params[:market_id], vendor_id: market_vendor_params[:vendor_id])
+      #   render json: MarketVendorSerializer.new(market_vendor), status: :created
+      # rescue ActionController::ParameterMissing => exception
+      #   param_missing_error_response(exception)
+      # rescue ActiveRecord::RecordInvalid => exception
+      #   validation_error_response(exception)
+      # rescue ActiveRecord::RecordNotFound => exception
+      #   not_found_response(exception)
+      # end
   end
 
   def destroy
