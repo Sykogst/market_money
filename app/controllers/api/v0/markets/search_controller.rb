@@ -4,7 +4,6 @@ class Api::V0::Markets::SearchController < ApplicationController
       params_combination_validator_error
     else
       markets = Market.search(params[:state], params[:city], params[:name])
-      # render json: MarketSerializer.new(markets), status: 200
       render json: SearchSerializer.format_market_search(markets), status: 200
     end
   end
