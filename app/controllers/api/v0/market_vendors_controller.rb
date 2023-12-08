@@ -13,7 +13,7 @@ class Api::V0::MarketVendorsController < ApplicationController
     begin
       market_vendor = MarketVendor.create!(market_vendor_params)
       render json: MarketVendorSerializer.new(market_vendor), status: 201
-    rescue ActiveRecord::RecordInvalid => exception
+    rescue ActiveRecord::RecordInvalid => exception # This caught EVERYTHING, so for now using a conditional
       market_id = exception.record.market_id
       vendor_id = exception.record.vendor_id
       if MarketVendor.find_by(market_id: market_id, vendor_id: vendor_id).present?
@@ -25,7 +25,7 @@ class Api::V0::MarketVendorsController < ApplicationController
       end
     end
 
-      # THIS DID NOT WORK :(
+      # THIS DID NOT WORK, Refactor later to properly use begin/rescue and proper error handling
       # begin
       #   market_vendor = MarketVendor.create!(market_id: market_vendor_params[:market_id], vendor_id: market_vendor_params[:vendor_id])
       #   render json: MarketVendorSerializer.new(market_vendor), status: :created
