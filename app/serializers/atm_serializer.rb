@@ -1,7 +1,7 @@
 class AtmSerializer
   def self.format_atms(atms)
     {
-      data: atms.map do |result|
+      data: atms[:results].map do |result|
         {
           id: nil,
           type: 'atm',

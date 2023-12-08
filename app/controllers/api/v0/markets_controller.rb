@@ -24,7 +24,7 @@ class Api::V0::MarketsController < ApplicationController
 
     atms = JSON.parse(response.body, symbolize_names: true)
 
-    render json: AtmSerializer.format_atms(atms[:results])
+    render json: AtmSerializer.format_atms(atms)
   end
 
   private
