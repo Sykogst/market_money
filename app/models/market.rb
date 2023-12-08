@@ -9,6 +9,10 @@ class Market < ApplicationRecord
   end
 
   def self.search(state, city, name)
-    Market.where("markets.city ILIKE '%#{city}%' and markets.state ILIKE '%#{state}%' and markets.name ilike '%#{name}%'")
+    Market.where("markets.city ILIKE ? and markets.state ILIKE ? and markets.name ILIKE ?", 
+                  "%#{city}%", 
+                  "%#{state}%", 
+                  "%#{name}%"
+                )
   end
 end
