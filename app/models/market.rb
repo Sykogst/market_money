@@ -9,16 +9,6 @@ class Market < ApplicationRecord
   end
 
   def self.search(state, city, name)
-    # results = all
-
-    # results = results.where('LOWER(state) = ?', state.downcase) if state.present?
-    # results = results.where(city: city) if city.present?
-    # results = results.where('LOWER(name) LIKE ?', "%#{name.downcase}%") if name.present?
-  
-    # results
-
-        results = results.where('LOWER(state) = ?', state.downcase) if state.present?
-    results = results.where(city: city) if city.present?
-    results = results.where('LOWER(name) LIKE ?', "%#{name.downcase}%") if name.present?
+    Market.where("markets.city ILIKE '%#{city}%' and markets.state ILIKE '%#{state}%' and markets.name ilike '%#{name}%'")
   end
 end
