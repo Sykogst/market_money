@@ -33,7 +33,7 @@ class Api::V0::VendorsController < ApplicationController
 
   def validation_error_response(exception)
     render json: ErrorSerializer.new(ErrorMessage.new(exception.message, 400))
-      .validation_fail, status: :bad_request
+      .serialize_json, status: :bad_request
   end
 
   def vendor_params

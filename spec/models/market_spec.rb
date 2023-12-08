@@ -10,7 +10,6 @@ RSpec.describe Market, type: :model do
     it { should validate_presence_of(:zip) }
     it { should validate_presence_of(:lat) }
     it { should validate_presence_of(:lon) }
-    # it { should validate_presence_of(:vendor_count) }
 
     it { should have_many(:market_vendors) }
     it { should have_many(:vendors).through(:market_vendors) }
@@ -22,12 +21,37 @@ RSpec.describe Market, type: :model do
       expect(market.get_vendor_count).to eq(0)
 
       vendor = create(:vendor)
-      market.vendors << vendor # QUESTION: I tried and did not work... create_list(:vendor, 3, markets: market)
+      market.vendors << vendor
       expect(market.get_vendor_count).to eq(1)
 
       more_vendors = create_list(:vendor, 2)
       market.vendors << more_vendors
       expect(market.get_vendor_count).to eq(3)
+    end
+  end
+
+  describe '.Class methods' do
+    it '.search' do
+      market1 = create(:market, state: 'California', city: 'Los Angeles', name: 'Downtown Market')
+      market2 = create(:market, state: 'California', city: 'San Francisco', name: 'Bay Area Market')
+      market3 = create(:market, state: 'New York', city: 'New York City', name: 'Big Apple Market')
+      results = Market.search('California', nil, 'Market')
+
+      expect(results).to include(market1, market2)
+      expect(results).not_to include(market3)
+    end
+
+    it 'is case-insensitive' do
+      market = create(:market, state: 'California', city: 'Los Angeles', name: 'Downtown Market')
+      results = Market.search('california', 'los angeles', 'downtown market')
+
+      expect(results).to include(market)
+    end
+
+    it 'returns an empty array if no matches are found' do
+      results = Market.search('Texas', 'Houston', 'Nonexistent Market')
+
+      expect(results).to be_empty
     end
   end
 end
