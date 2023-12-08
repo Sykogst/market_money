@@ -12,10 +12,19 @@ class Api::V0::MarketsController < ApplicationController
   end
 
   def nearest_atms
-    market = Market.find(params[:id])
-    atms = 
-    
-    render json: AtmSerializer.new(atms)
+    market = Market.find(params[:market_id])
+
+    conn = Faraday.new(url: "https://api.tomtom.com/search/2/categorySearch/ATM.json") do |faraday|
+      faraday.params["lat"] = market.lat
+      faraday.params["lon"] = market.lon
+      faraday.params["categorySet"] = 7397
+      faraday.params["Key"] = Rails.application.credentials.tomtom[:key]
+    end
+    response = conn.get
+
+    atms = JSON.parse(response.body, symbolize_names: true)
+
+    render json: AtmSerializer.format_atms(atms[:results])
   end
 
   private
